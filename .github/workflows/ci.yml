@@ -1,0 +1,34 @@
+name: KOM-IGEN-NU-BRITT-MARIE-BYGG-FÖR-FA_AN
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Chekoot
+        uses: actions/checkout@v3
+
+      - name: debbian
+        uses: docker://debian:latest
+
+      - name: paket
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+
+      - name: bygg
+        run: |
+          make
+
+      - name: test
+        run: |
+          make test
+
