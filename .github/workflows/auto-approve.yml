@@ -1,9 +1,9 @@
-name: AutoApprove
+name: Build and Approve PR
 
 on:
   pull_request:
     branches:
-      - master
+      - main
 
 permissions:
   pull-requests: write
@@ -34,13 +34,12 @@ jobs:
         uses: actions/github-script@v6
         with:
           script: |
-            const { context, github } = require("@actions/github");
             const pullRequestNumber = context.payload.pull_request.number;
             await github.pulls.createReview({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: pullRequestNumber,
               event: "APPROVE",
-              body: "AutoApproved"
+              body: "Blabla"
             });
 
