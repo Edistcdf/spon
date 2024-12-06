@@ -3,7 +3,7 @@ name: Build and Approve PR
 on:
   pull_request:
     branches:
-      - main
+      - master
 
 permissions:
   pull-requests: write
