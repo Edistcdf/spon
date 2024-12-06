@@ -1,0 +1,46 @@
+name: AutoApprove
+
+on:
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  pull-requests: write
+
+jobs:
+  build-and-approve:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential
+
+      - name: Build
+        run: |
+          make
+
+      - name: Run tests
+        run: |
+          make test
+
+      - name: Approve PR
+        if: ${{ success() }}
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const { context, github } = require("@actions/github");
+            const pullRequestNumber = context.payload.pull_request.number;
+            await github.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pullRequestNumber,
+              event: "APPROVE",
+              body: "AutoApproved"
+            });
+
