@@ -6,40 +6,45 @@ on:
       - master
 
 permissions:
-  pull-requests: write
+  pull-requests: write  # Required to add reviews to the PR
 
 jobs:
   build-and-approve:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout the code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Install dependencies
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential
 
+      # Build the code
       - name: Build
         run: |
           make
 
+      # Run tests
       - name: Run tests
         run: |
           make test
 
+      # Approve PR if tests pass
       - name: Approve PR
-        if: ${{ success() }}
+        if: ${{ success() }}  # Only run this step if all previous steps succeed
         uses: actions/github-script@v6
         with:
           script: |
             const pullRequestNumber = context.payload.pull_request.number;
-            await github.pulls.createReview({
+            await github.rest.pulls.createReview({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: pullRequestNumber,
               event: "APPROVE",
-              body: "Blabla"
+              body: "The build was successful. Approved!"
             });
 
